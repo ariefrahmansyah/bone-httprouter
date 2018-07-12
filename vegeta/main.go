@@ -8,21 +8,28 @@ import (
 	vegeta "github.com/tsenart/vegeta/lib"
 )
 
-var rate = uint64(100) // per second
-var duration = 5 * time.Second
+var rate = uint64(1000) // per second
+var duration = 10 * time.Second
 
 func main() {
-	var totalBone, totalHttprouter time.Duration
+	var totalBase, totalBone, totalHttprouter, totalRouter time.Duration
 	for _, route := range bonehttprouter.StaticRoutes {
-		totalBone += attack("http://localhost:8080", route)
-		totalHttprouter += attack("http://localhost:8081", route)
+		totalBase += attack("http://localhost:8080", route)
+		totalBone += attack("http://localhost:8081", route)
+		totalHttprouter += attack("http://localhost:8082", route)
+		totalRouter += attack("http://localhost:8083", route)
+		fmt.Println()
 	}
 
-	fmt.Printf("Total bone: %s", totalBone)
-	fmt.Printf("Total httpRouter: %s", totalHttprouter)
+	fmt.Printf("Total base: %s\n", totalBase)
+	fmt.Printf("Total bone: %s\n", totalBone)
+	fmt.Printf("Total httprouter: %s\n", totalHttprouter)
+	fmt.Printf("Total router: %s\n", totalRouter)
 
-	fmt.Printf("Avg bone: %s", time.Duration(totalBone)/time.Duration(len(bonehttprouter.StaticRoutes)))
-	fmt.Printf("Avg httpRouter: %s", time.Duration(totalHttprouter)/time.Duration(len(bonehttprouter.StaticRoutes)))
+	fmt.Printf("Avg base: %s\n", time.Duration(totalBase)/time.Duration(len(bonehttprouter.StaticRoutes)))
+	fmt.Printf("Avg bone: %s\n", time.Duration(totalBone)/time.Duration(len(bonehttprouter.StaticRoutes)))
+	fmt.Printf("Avg httprouter: %s\n", time.Duration(totalHttprouter)/time.Duration(len(bonehttprouter.StaticRoutes)))
+	fmt.Printf("Avg router: %s\n", time.Duration(totalRouter)/time.Duration(len(bonehttprouter.StaticRoutes)))
 }
 
 func attack(host string, route bonehttprouter.Route) time.Duration {
@@ -38,6 +45,6 @@ func attack(host string, route bonehttprouter.Route) time.Duration {
 	}
 	metrics.Close()
 
-	fmt.Printf("%s: %s\n", host+route.Path, metrics.Latencies.P99)
+	fmt.Printf("%s \t Mean: %s \t P99: %s \t Max: %s\n", host+route.Path, metrics.Latencies.Mean, metrics.Latencies.P99, metrics.Latencies.Max)
 	return metrics.Latencies.P99
 }

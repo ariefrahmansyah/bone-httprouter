@@ -4,22 +4,17 @@ import (
 	"net/http"
 
 	bonehttprouter "github.com/ariefrahmansyah/bone-httprouter"
-	"github.com/go-zoo/bone"
+	"github.com/ariefrahmansyah/server/router"
 )
 
 func main() {
-	mux := bone.New()
+	router := router.New()
 
 	for _, route := range bonehttprouter.StaticRoutes {
-		switch route.Method {
-		case "GET":
-			mux.Get(route.Path, http.HandlerFunc(httpHandlerFunc))
-		default:
-			panic("Unknow HTTP method: " + route.Method)
-		}
+		router.Get(route.Path, httpHandlerFunc)
 	}
 
-	http.ListenAndServe(":8081", mux)
+	http.ListenAndServe(":8083", router)
 }
 
 func httpHandlerFunc(w http.ResponseWriter, r *http.Request) {

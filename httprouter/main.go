@@ -14,7 +14,10 @@ func main() {
 		router.Handle(route.Method, route.Path, httpRouterHandle)
 	}
 
-	http.ListenAndServe(":8081", router)
+	http.ListenAndServe(":8082", router)
 }
 
-func httpRouterHandle(_ http.ResponseWriter, _ *http.Request, _ httprouter.Params) {}
+func httpRouterHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(r.URL.Path))
+}
